@@ -16,7 +16,22 @@
       "Bash(openspec list:*)",
       "Bash(npm test:*)",
       "Bash(npx tsc:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(for change in system-architecture-module database-module summary-generation-module data-collection-module everyday-news-system)",
+      "Bash(do echo \"=== $change ===\")",
+      "Bash(done)",
+      "Bash(TARGET=\"openspec/changes/archive/2026-01-30-database-module\":*)",
+      "Bash(if:*)",
+      "Bash(then echo \"Target already exists: $TARGET\")",
+      "Bash(exit:*)",
+      "Bash(else mv \"openspec/changes/database-module\" \"$TARGET\")",
+      "Bash(echo:*)",
+      "Bash(fi:*)",
+      "Bash(npx jest:*)",
+      "Bash(for dir in claude-code-integration error-handling monitoring-metrics notification-system system-scheduler)",
+      "Bash(do if [ -d \"openspec/specs/$dir\" ])",
+      "Bash(then echo \"Main spec exists: $dir\")",
+      "Bash(else echo \"Main spec does NOT exist: $dir\")"
     ]
   }
 }

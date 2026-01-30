@@ -1,0 +1,118 @@
+schema: spec-driven
+
+# Project context
+# This is shown to AI when creating artifacts.
+context: |
+  ## Everyday News - 每日热点新闻聚合系统
+
+  ### 项目概述
+  定时采集 Twitter、YouTube、TikTok、微博、抖音最热门新闻，汇总国内外热点及投资相关内容，使用 SQLite 存储，Claude Skill 固化总结模板。
+
+  ### 技术栈
+  - **语言**: TypeScript (ES2022)
+  - **运行时**: Node.js 20+
+  - **数据库**: SQLite (better-sqlite3, sqlite3)
+  - **爬虫**: Playwright / MCP Browser
+  - **路由**: Claude Code Router (ccr)
+  - **LLM**: DeepSeek / OpenRouter
+  - **测试**: Jest, ts-jest
+  - **部署**: Docker, docker-compose
+  - **其他**: node-cron (定时任务), node-telegram-bot-api (通知), nodemailer (邮件)
+
+  ### 代码规范
+  - 使用 TypeScript 严格模式 (strict: true)
+  - 中文注释（优先使用中文，重要接口可中英双语）
+  - 单例模式用于核心服务（DatabaseConnectionManager等）
+  - Repository 模式用于数据访问层
+  - 异步函数使用 async/await
+  - 错误处理使用 try-catch 包裹数据库操作
+  - 接口和类型定义放在 types/ 目录
+  - 单元测试使用 Jest，测试文件放在 __tests__ 目录
+
+  ### 项目结构
+  ```
+  everyday_news/
+  ├── src/
+  │   ├── types/          # 类型定义
+  │   ├── services/       # 采集服务（待实现）
+  │   ├── utils/          # 工具函数（待实现）
+  │   ├── db/             # 数据库操作（已实现）
+  │   │   ├── config/     # 数据库配置
+  │   │   ├── migrations/ # 数据迁移
+  │   │   ├── repositories/ # 数据仓库
+  │   │   ├── optimization/ # 数据库优化
+  │   │   ├── backup/     # 备份恢复
+  │   │   ├── cli/        # 命令行工具
+  │   │   └── __tests__/  # 数据库测试
+  │   └── system/         # 系统架构模块（开发中）
+  │       ├── error-handling/ # 错误处理
+  │       ├── notification/   # 通知系统
+  │       ├── claude-integration/ # Claude集成
+  │       ├── scheduler/      # 任务调度
+  │       ├── monitoring/     # 监控指标
+  │       └── config/         # 系统配置
+  ├── docs/               # 提案文档
+  ├── tests/              # 测试用例（待实现）
+  ├── skills/             # Claude Skills（待实现）
+  ├── openspec/           # OpenSpec 配置和规范
+  │   ├── changes/        # 变更记录
+  │   └── specs/          # 能力规范
+  ├── config/             # 配置文件
+  └── project.md          # 项目总览
+  ```
+
+  ### 数据库设计
+  - **platforms**: 平台信息（Twitter, YouTube, TikTok, 微博, 抖音）
+  - **news_items**: 新闻条目
+  - **daily_summaries**: 每日总结
+  - **crawl_logs**: 采集日志
+  - 支持数据迁移、备份恢复、性能优化
+
+  ### 现有能力规范 (openspec/specs/)
+  - database-schema: 数据库Schema定义
+  - database-operations: 数据库CRUD操作
+  - data-migration: 数据迁移系统
+  - backup-recovery: 备份恢复系统
+  - database-optimization: 数据库优化
+
+  ### 进行中的变更 (openspec/changes/)
+  - **system-architecture-module**: 系统架构模块 - 包含错误处理、通知系统、Claude集成、任务调度、监控指标
+  - **data-collection-module**: 数据采集模块 - 包含Twitter、YouTube、TikTok、微博、抖音采集器，反爬虫系统，数据清洗，采集任务管理
+  - **summary-generation-module**: 摘要生成模块 - 包含AI摘要引擎、总结模板、Claude Skill集成、总结触发器、总结质量控制
+  - **everyday-news-system**: 主系统提案 - 初始提案阶段
+
+  ### 已完成/已归档的变更
+  - **database-module** (已归档): 数据库模块 - 包含数据库Schema、操作、迁移、备份恢复、优化系统，已实现并归档到 openspec/changes/archive/
+
+  ### 开发约定
+  - 提交信息使用中文描述
+  - 新功能需要先创建 OpenSpec 变更提案
+  - 数据库变更需要创建迁移脚本
+  - 重要功能需要编写单元测试
+  - 文档使用中文编写，放在 docs/ 目录
+
+# Per-artifact rules
+rules:
+  proposal:
+    - 使用中文撰写提案
+    - 包含 "背景"、"目标"、"非目标"、"技术方案"、"时间估算" 章节
+    - 提案长度不超过 1000 字
+    - 明确说明该变更与现有系统的关系
+  design:
+    - 使用中文撰写设计文档
+    - 包含 "架构设计"、"组件设计"、"接口设计"、"数据流"、"错误处理" 章节
+    - 提供架构图或流程图描述（使用 Mermaid 或文字描述）
+    - 说明与现有组件的集成方式
+  specs:
+    - 使用英文撰写规范（符合 OpenSpec 格式要求）
+    - 每个能力规范放在单独目录中
+    - 使用 "SHALL"、"SHOULD"、"MAY" 等规范语言
+    - 包含清晰的验收标准
+    - 参考现有规范格式（如 database-schema/spec.md）
+  tasks:
+    - 使用中文任务列表
+    - 每个任务使用复选框格式 [ ]
+    - 任务按功能模块分组（如 "1. 项目初始化和依赖安装"）
+    - 每个任务应可独立完成，时间估算不超过 4 小时
+    - 复杂任务分解为子任务
+    - 包含测试任务和文档任务
