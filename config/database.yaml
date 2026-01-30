@@ -1,0 +1,139 @@
+# 每日热点新闻聚合系统 - 数据库配置
+# 配置文件优先级: 环境变量 > 配置文件 > 默认值
+
+# 数据库连接配置
+database:
+  # 数据库文件路径
+  databasePath: ./data/everyday_news.db
+
+  # 备份目录路径
+  backupPath: ./data/backups
+
+  # 最大连接数
+  maxConnections: 20
+
+  # 查询超时时间（毫秒）
+  timeout: 10000
+
+# 备份配置
+backup:
+  # 备份目录
+  backupDirectory: ./data/backups
+
+  # 备份类型: full（完整备份）, incremental（增量备份）
+  backupType: full
+
+  # 备份保留天数
+  retentionDays: 7
+
+  # 是否启用压缩
+  compress: true
+
+  # 压缩级别 (1-9)
+  compressionLevel: 6
+
+  # 是否启用加密
+  encrypt: false
+
+  # 加密密钥（如果启用加密）
+  # encryptionKey: your-secret-key
+
+  # 最大备份文件数
+  maxBackupFiles: 30
+
+  # 自动备份间隔（秒，0表示禁用）
+  autoBackupInterval: 86400  # 24小时
+
+# 数据迁移配置
+migration:
+  # 迁移表名
+  migrationTableName: schema_migrations
+
+  # 迁移脚本目录
+  migrationsDirectory: ./src/db/migrations/scripts
+
+  # 是否在迁移失败时自动回滚
+  autoRollbackOnFailure: true
+
+  # 是否在启动时检查迁移
+  checkOnStartup: true
+
+  # 是否记录详细日志
+  verboseLogging: false
+
+# 性能监控配置
+performance:
+  # 是否启用性能监控
+  enabled: true
+
+  # 慢查询阈值（毫秒）
+  slowQueryThreshold: 1000
+
+  # 监控数据保留天数
+  retentionDays: 30
+
+  # 是否启用查询缓存
+  queryCacheEnabled: true
+
+  # 查询缓存最大条目数
+  queryCacheMaxEntries: 1000
+
+  # 缓存过期时间（秒）
+  queryCacheTTL: 300
+
+  # 是否启用索引监控
+  indexMonitoringEnabled: true
+
+  # 索引优化检查间隔（秒）
+  indexCheckInterval: 3600
+
+  # 是否启用连接池监控
+  connectionPoolMonitoringEnabled: true
+
+  # 告警阈值配置
+  alertThresholds:
+    # 连接池使用率告警阈值（百分比）
+    connectionPoolUsage: 80
+
+    # 查询执行时间告警阈值（毫秒）
+    queryExecutionTime: 5000
+
+    # 数据库文件大小告警阈值（MB）
+    databaseSize: 1024  # 1GB
+
+# 数据库优化配置
+optimization:
+  # 是否启用自动优化
+  autoOptimizationEnabled: true
+
+  # 优化检查间隔（小时）
+  optimizationCheckInterval: 24
+
+  # 自动VACUUM阈值（MB）
+  autoVacuumThreshold: 100
+
+  # 自动ANALYZE阈值（插入/更新次数）
+  autoAnalyzeThreshold: 1000
+
+  # 是否启用查询计划分析
+  queryPlanAnalysisEnabled: true
+
+  # 最大建议索引数
+  maxSuggestedIndexes: 10
+
+# 通用配置
+general:
+  # 环境: development, production, testing
+  environment: development
+
+  # 日志级别: error, warn, info, debug
+  logLevel: info
+
+  # 是否启用调试模式
+  debugMode: false
+
+  # 应用名称
+  appName: everyday-news
+
+  # 应用版本
+  appVersion: 1.0.0

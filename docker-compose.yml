@@ -1,0 +1,122 @@
+# 每日热点新闻聚合系统 - Docker Compose配置
+# 用于开发、测试和生产环境部署
+
+version: '3.8'
+
+services:
+  # 主应用服务
+  app:
+    build: .
+    container_name: everyday-news-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - DATABASE_PATH=/app/data/everyday_news.db
+      - BACKUP_PATH=/app/data/backups
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - MAX_CONNECTIONS=${MAX_CONNECTIONS:-10}
+      - DATABASE_TIMEOUT=${DATABASE_TIMEOUT:-5000}
+    volumes:
+      - everyday-news-data:/app/data
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {if(r.statusCode===200)process.exit(0);process.exit(1)}).on('error',()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - everyday-news-network
+    labels:
+      - "com.example.description=Everyday News Aggregation System"
+      - "com.example.version=1.0.0"
+
+  # 数据库管理界面（可选）
+  adminer:
+    image: adminer:latest
+    container_name: everyday-news-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=app
+    networks:
+      - everyday-news-network
+    depends_on:
+      - app
+
+  # 备份服务（定时备份）
+  backup:
+    build: .
+    container_name: everyday-news-backup
+    restart: unless-stopped
+    command: ["npm", "run", "db:backup:auto"]
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - DATABASE_PATH=/app/data/everyday_news.db
+      - BACKUP_PATH=/app/data/backups
+      - BACKUP_TYPE=${BACKUP_TYPE:-full}
+      - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS:-7}
+      - BACKUP_COMPRESS=${BACKUP_COMPRESS:-true}
+      - BACKUP_AUTO_INTERVAL=${BACKUP_AUTO_INTERVAL:-86400}
+    volumes:
+      - everyday-news-data:/app/data
+      - everyday-news-backups:/app/data/backups
+      - ./config:/app/config:ro
+    networks:
+      - everyday-news-network
+    depends_on:
+      - app
+
+  # 监控服务（可选）
+  monitoring:
+    image: grafana/grafana:latest
+    container_name: everyday-news-monitoring
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - everyday-news-grafana-data:/var/lib/grafana
+      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./config/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - everyday-news-network
+    depends_on:
+      - app
+
+volumes:
+  # 应用数据卷（数据库文件、备份等）
+  everyday-news-data:
+    name: everyday-news-data
+    driver: local
+    driver_opts:
+      type: none
+      device: ${DATA_VOLUME_PATH:-./data}
+      o: bind
+
+  # 备份数据卷（用于备份文件）
+  everyday-news-backups:
+    name: everyday-news-backups
+    driver: local
+    driver_opts:
+      type: none
+      device: ${BACKUP_VOLUME_PATH:-./backups}
+      o: bind
+
+  # Grafana数据卷
+  everyday-news-grafana-data:
+    name: everyday-news-grafana-data
+
+networks:
+  everyday-news-network:
+    name: everyday-news-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

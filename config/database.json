@@ -1,0 +1,56 @@
+{
+  "database": {
+    "databasePath": "./data/everyday_news.db",
+    "backupPath": "./data/backups",
+    "maxConnections": 20,
+    "timeout": 10000
+  },
+  "backup": {
+    "backupDirectory": "./data/backups",
+    "backupType": "full",
+    "retentionDays": 7,
+    "compress": true,
+    "compressionLevel": 6,
+    "encrypt": false,
+    "maxBackupFiles": 30,
+    "autoBackupInterval": 86400
+  },
+  "migration": {
+    "migrationTableName": "schema_migrations",
+    "migrationsDirectory": "./src/db/migrations/scripts",
+    "autoRollbackOnFailure": true,
+    "checkOnStartup": true,
+    "verboseLogging": false
+  },
+  "performance": {
+    "enabled": true,
+    "slowQueryThreshold": 1000,
+    "retentionDays": 30,
+    "queryCacheEnabled": true,
+    "queryCacheMaxEntries": 1000,
+    "queryCacheTTL": 300,
+    "indexMonitoringEnabled": true,
+    "indexCheckInterval": 3600,
+    "connectionPoolMonitoringEnabled": true,
+    "alertThresholds": {
+      "connectionPoolUsage": 80,
+      "queryExecutionTime": 5000,
+      "databaseSize": 1024
+    }
+  },
+  "optimization": {
+    "autoOptimizationEnabled": true,
+    "optimizationCheckInterval": 24,
+    "autoVacuumThreshold": 100,
+    "autoAnalyzeThreshold": 1000,
+    "queryPlanAnalysisEnabled": true,
+    "maxSuggestedIndexes": 10
+  },
+  "general": {
+    "environment": "development",
+    "logLevel": "info",
+    "debugMode": false,
+    "appName": "everyday-news",
+    "appVersion": "1.0.0"
+  }
+}

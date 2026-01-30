@@ -1,0 +1,38 @@
+{
+  "name": "everyday-news",
+  "version": "1.0.0",
+  "description": "每日热点新闻聚合系统",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "test": "jest",
+    "db:init": "ts-node src/db/cli/init.ts",
+    "db:status": "ts-node src/db/cli/init.ts status",
+    "db:reset": "ts-node src/db/cli/init.ts reset",
+    "db:cli": "ts-node src/db/cli/index.ts"
+  },
+  "keywords": [
+    "news",
+    "aggregator",
+    "database",
+    "sqlite"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.24",
+    "@types/sqlite3": "^3.1.11",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "js-yaml": "^4.1.1",
+    "sqlite3": "^5.1.7"
+  }
+}
