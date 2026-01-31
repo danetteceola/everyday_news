@@ -31,7 +31,9 @@
       "Bash(for dir in claude-code-integration error-handling monitoring-metrics notification-system system-scheduler)",
       "Bash(do if [ -d \"openspec/specs/$dir\" ])",
       "Bash(then echo \"Main spec exists: $dir\")",
-      "Bash(else echo \"Main spec does NOT exist: $dir\")"
+      "Bash(else echo \"Main spec does NOT exist: $dir\")",
+      "Bash(npm search:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }
