@@ -4,7 +4,6 @@
  */
 
 import { CollectionLogger, createAntiCrawlingLogger } from '../utils/logger';
-import { RequestStats } from './anti-crawling-system';
 import { ProxyManager } from './proxy-manager';
 import { UserAgentManager } from './user-agent-manager';
 import { ErrorRetryManager } from './error-retry-manager';
@@ -678,7 +677,7 @@ export class MonitoringManager {
     switch (condition.severity) {
       case 'critical':
       case 'error':
-        this.logger.error('Alert triggered', null, logData);
+        this.logger.error('Alert triggered', new Error('Monitoring alert triggered'), logData);
         break;
       case 'warning':
         this.logger.warn('Alert triggered', logData);

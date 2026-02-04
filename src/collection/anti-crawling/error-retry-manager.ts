@@ -192,10 +192,10 @@ export class ErrorRetryManager {
         const errorType = this.classifyError(error);
         return this.isRetryableErrorType(errorType) && attempt <= this.getStrategy('exponentialBackoff')!.maxRetries;
       },
-      calculateDelay: (attempt, baseDelay, backoffFactor, maxDelay, enableJitter, jitterFactor) => {
+      calculateDelay: (attempt, baseDelay, _backoffFactor, maxDelay, enableJitter, jitterFactor) => {
         // 指数退避：baseDelay * (backoffFactor ^ (attempt - 1))
         const delay = Math.min(
-          baseDelay * Math.pow(backoffFactor, attempt - 1),
+          baseDelay * Math.pow(_backoffFactor, attempt - 1),
           maxDelay
         );
 
@@ -244,7 +244,7 @@ export class ErrorRetryManager {
         const errorType = this.classifyError(error);
         return this.isRetryableErrorType(errorType) && attempt <= this.getStrategy('linear')!.maxRetries;
       },
-      calculateDelay: (attempt, baseDelay, backoffFactor, maxDelay, enableJitter, jitterFactor) => {
+      calculateDelay: (attempt, baseDelay, _backoffFactor, maxDelay, enableJitter, jitterFactor) => {
         // 线性递增：baseDelay * attempt
         const delay = Math.min(baseDelay * attempt, maxDelay);
 
@@ -292,9 +292,9 @@ export class ErrorRetryManager {
         const errorType = this.classifyError(error);
         return this.isRetryableErrorType(errorType) && attempt <= this.getStrategy('conservative')!.maxRetries;
       },
-      calculateDelay: (attempt, baseDelay, backoffFactor, maxDelay, enableJitter, jitterFactor) => {
+      calculateDelay: (attempt, baseDelay, _backoffFactor, maxDelay, enableJitter, jitterFactor) => {
         const delay = Math.min(
-          baseDelay * Math.pow(backoffFactor, attempt - 1),
+          baseDelay * Math.pow(_backoffFactor, attempt - 1),
           maxDelay
         );
 

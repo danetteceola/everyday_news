@@ -492,7 +492,7 @@ export class CaptchaManager {
 
         // 检查是否还有尝试次数
         if (attempt === this.config.maxAutoSolveAttempts) {
-          this.logger.error(`All CAPTCHA solve attempts failed`, null, {
+          this.logger.error(`All CAPTCHA solve attempts failed`, new Error('All CAPTCHA solve attempts failed'), {
             captchaType: detection.captchaType,
             maxAttempts: this.config.maxAutoSolveAttempts
           });
@@ -631,7 +631,7 @@ export class CaptchaManager {
         return this.notifyCaptcha(detection, context);
 
       case 'pause':
-        this.logger.error('Pausing collection due to CAPTCHA failure', null, {
+        this.logger.error('Pausing collection due to CAPTCHA failure', new Error('CAPTCHA failure caused collection pause'), {
           captchaType: detection.captchaType,
           strategy: 'pause'
         });
