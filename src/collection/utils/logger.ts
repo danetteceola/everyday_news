@@ -226,6 +226,13 @@ export function createPlatformLogger(platform: string): CollectionLogger {
 }
 
 /**
+ * 创建采集器日志器（兼容旧代码）
+ */
+export function createCollectorLogger(moduleName: string): CollectionLogger {
+  return defaultLogger.createSubLogger(`collector.${moduleName}`);
+}
+
+/**
  * 创建反爬系统日志器
  */
 export function createAntiCrawlingLogger(): CollectionLogger {

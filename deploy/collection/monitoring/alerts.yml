@@ -1,0 +1,64 @@
+# 数据采集模块告警规则
+
+groups:
+  - name: collection_alerts
+    rules:
+      # 服务宕机告警
+      - alert: CollectionServiceDown
+        expr: up{job="collection-service"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "数据采集服务宕机"
+          description: "数据采集服务 {{ $labels.instance }} 已宕机超过1分钟"
+
+      # 采集失败率过高
+      - alert: HighCollectionFailureRate
+        expr: rate(collection_failed_total[5m]) / rate(collection_total[5m]) > 0.3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "数据采集失败率过高"
+          description: "数据采集失败率超过30% (当前值: {{ $value }})"
+
+      # 内存使用过高
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "内存使用率过高"
+          description: "内存使用率超过80% (当前值: {{ $value }})"
+
+      # CPU使用过高
+      - alert: HighCPUUsage
+        expr: rate(node_cpu_seconds_total{mode!="idle"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU使用率过高"
+          description: "CPU使用率超过80% (当前值: {{ $value }})"
+
+      # 磁盘空间不足
+      - alert: LowDiskSpace
+        expr: node_filesystem_avail_bytes{mountpoint="/app/data"} / node_filesystem_size_bytes{mountpoint="/app/data"} < 0.2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "磁盘空间不足"
+          description: "数据目录磁盘空间不足20% (当前值: {{ $value }})"
+
+      # 采集延迟过高
+      - alert: HighCollectionLatency
+        expr: histogram_quantile(0.95, rate(collection_duration_seconds_bucket[5m])) > 300
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "数据采集延迟过高"
+          description: "95%的数据采集延迟超过5分钟 (当前值: {{ $value }}秒)"

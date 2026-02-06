@@ -1,0 +1,54 @@
+{
+  "system": {
+    "debug": true,
+    "logLevel": "debug"
+  },
+  "antiCrawling": {
+    "requestDelay": {
+      "minDelay": 500,
+      "maxDelay": 2000
+    }
+  },
+  "platforms": [
+    {
+      "platform": "twitter",
+      "platformSpecific": {
+        "collectionTargets": {
+          "maxTweetsPerCollection": 20
+        }
+      }
+    },
+    {
+      "platform": "youtube",
+      "platformSpecific": {
+        "collectionTargets": {
+          "maxVideosPerCollection": 10
+        }
+      }
+    },
+    {
+      "platform": "tiktok",
+      "platformSpecific": {
+        "collectionTargets": {
+          "maxVideosPerCollection": 10
+        }
+      }
+    },
+    {
+      "platform": "weibo",
+      "platformSpecific": {
+        "collectionTargets": {
+          "maxWeibosPerCollection": 20
+        }
+      }
+    },
+    {
+      "platform": "douyin",
+      "platformSpecific": {
+        "collectionTargets": {
+          "maxVideosPerCollection": 10
+        }
+      }
+    }
+  ]
+}

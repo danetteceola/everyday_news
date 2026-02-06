@@ -1,0 +1,128 @@
+# 数据采集模块 - Docker Compose配置
+# 用于本地开发和测试环境
+
+version: '3.8'
+
+services:
+  # 数据采集服务
+  collection-service:
+    build:
+      context: ../..
+      dockerfile: deploy/collection/Dockerfile.collection
+    image: everyday-news-collection:latest
+    container_name: everyday-news-collection
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - MAX_CONCURRENT_COLLECTIONS=3
+      - ENABLE_ANTI_CRAWLING=true
+      - ENABLE_DATA_CLEANING=true
+      - COLLECTION_DATA_PATH=/app/data/collection
+      - COLLECTION_LOG_PATH=/app/data/logs
+      - COLLECTION_BACKUP_PATH=/app/data/backups
+      # 平台特定配置（可根据需要启用/禁用）
+      - TWITTER_ENABLED=true
+      - YOUTUBE_ENABLED=true
+      - TIKTOK_ENABLED=true
+      - WEIBO_ENABLED=true
+      - DOUYIN_ENABLED=true
+    volumes:
+      # 数据持久化
+      - collection_data:/app/data/collection
+      - collection_logs:/app/data/logs
+      - collection_backups:/app/data/backups
+      # 配置文件挂载（便于修改配置）
+      - ../../config:/app/config:ro
+    ports:
+      # 监控端口（如果需要暴露监控接口）
+      - "9090:9090"
+    healthcheck:
+      test: ["CMD", "node", "-e", "const fs = require('fs'); const path = '/app/data/collection/health_check.txt'; fs.writeFileSync(path, Date.now().toString()); fs.unlinkSync(path); process.exit(0);"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - collection-network
+    # 资源限制
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # 监控服务（可选）
+  collection-monitor:
+    image: prom/prometheus:latest
+    container_name: collection-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9091:9090"
+    networks:
+      - collection-network
+
+  # 日志收集（可选）
+  collection-logs:
+    image: grafana/loki:latest
+    container_name: collection-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki_data:/loki
+    ports:
+      - "3100:3100"
+    networks:
+      - collection-network
+
+  # 可视化面板（可选）
+  collection-grafana:
+    image: grafana/grafana:latest
+    container_name: collection-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana-dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana-datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3001:3000"
+    networks:
+      - collection-network
+    depends_on:
+      - collection-monitor
+      - collection-logs
+
+networks:
+  collection-network:
+    driver: bridge
+    name: collection-network
+
+volumes:
+  collection_data:
+    name: everyday-news-collection-data
+  collection_logs:
+    name: everyday-news-collection-logs
+  collection_backups:
+    name: everyday-news-collection-backups
+  prometheus_data:
+    name: collection-prometheus-data
+  loki_data:
+    name: collection-loki-data
+  grafana_data:
+    name: collection-grafana-data

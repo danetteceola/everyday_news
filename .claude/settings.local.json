@@ -33,7 +33,12 @@
       "Bash(then echo \"Main spec exists: $dir\")",
       "Bash(else echo \"Main spec does NOT exist: $dir\")",
       "Bash(npm search:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(tree:*)",
+      "Bash(grep:*)",
+      "Bash(chmod:*)"
     ]
   }
 }

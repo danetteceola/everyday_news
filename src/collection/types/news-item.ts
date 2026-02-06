@@ -195,6 +195,36 @@ export interface TikTokSpecificData {
   /** 视频ID */
   videoId: string;
 
+  /** 作者ID */
+  authorId?: string;
+
+  /** 视频时长（秒） */
+  duration?: number;
+
+  /** 视频标签 */
+  tags?: string[];
+
+  /** 是否包含音频 */
+  hasAudio?: boolean;
+
+  /** 是否包含特效 */
+  hasEffects?: boolean;
+
+  /** 音乐信息 */
+  musicInfo?: {
+    title: string;
+    author: string;
+    album?: string;
+    duration?: number;
+  };
+
+  /** 特效信息 */
+  effectInfo?: {
+    name: string;
+    id: string;
+    type?: string;
+  };
+
   /** 音乐ID */
   musicId?: string;
 

@@ -1,0 +1,94 @@
+# 数据采集模块 - Docker镜像
+# 专门用于运行数据采集任务的独立容器
+
+# 使用多阶段构建优化镜像大小
+
+# 阶段1: 构建阶段
+FROM node:18-alpine AS builder
+
+# 安装Playwright依赖
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    font-noto-emoji
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制包管理文件
+COPY package*.json ./
+COPY tsconfig.json ./
+
+# 安装依赖（包括开发依赖）
+RUN npm ci
+
+# 复制源代码
+COPY src ./src
+COPY config ./config
+
+# 构建TypeScript
+RUN npm run build
+
+# 阶段2: 生产阶段
+FROM node:18-alpine
+
+# 安装运行时依赖
+RUN apk add --no-cache \
+    sqlite \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    font-noto-emoji \
+    tzdata
+
+# 设置时区
+ENV TZ=Asia/Shanghai
+
+# 创建非root用户
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 -G nodejs
+
+# 设置工作目录
+WORKDIR /app
+
+# 从构建阶段复制文件
+COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nodejs:nodejs /app/config ./config
+
+# 创建数据目录并设置权限
+RUN mkdir -p /app/data/collection && \
+    mkdir -p /app/data/logs && \
+    mkdir -p /app/data/backups && \
+    chown -R nodejs:nodejs /app/data
+
+# 切换到非root用户
+USER nodejs
+
+# 健康检查
+HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=3 \
+  CMD node -e "const fs = require('fs'); const path = '/app/data/collection/health_check.txt'; fs.writeFileSync(path, Date.now().toString()); fs.unlinkSync(path); process.exit(0);"
+
+# 设置环境变量
+ENV NODE_ENV=production \
+    COLLECTION_DATA_PATH=/app/data/collection \
+    COLLECTION_LOG_PATH=/app/data/logs \
+    COLLECTION_BACKUP_PATH=/app/data/backups \
+    LOG_LEVEL=info \
+    MAX_CONCURRENT_COLLECTIONS=3 \
+    ENABLE_ANTI_CRAWLING=true \
+    ENABLE_DATA_CLEANING=true
+
+# 暴露监控端口（如果需要）
+EXPOSE 9090
+
+# 启动命令 - 运行数据采集服务
+CMD ["node", "dist/src/collection/collection-service.js"]

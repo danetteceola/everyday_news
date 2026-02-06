@@ -452,4 +452,25 @@ export abstract class AntiCrawlingSystem {
       changes: Object.keys(newConfig)
     });
   }
+
+  /**
+   * 初始化（子类可以覆盖）
+   */
+  async initialize(): Promise<void> {
+    this.logger.debug('AntiCrawlingSystem initialized');
+  }
+
+  /**
+   * 应用延迟（子类可以覆盖）
+   */
+  async applyDelay(): Promise<void> {
+    await this.waitForDelay();
+  }
+
+  /**
+   * 清理资源（子类可以覆盖）
+   */
+  async cleanup(): Promise<void> {
+    this.logger.info('AntiCrawlingSystem resources cleaned up');
+  }
 }

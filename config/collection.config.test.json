@@ -1,0 +1,31 @@
+{
+  "system": {
+    "debug": true,
+    "logLevel": "debug"
+  },
+  "antiCrawling": {
+    "enabled": false
+  },
+  "platforms": [
+    {
+      "platform": "twitter",
+      "enabled": false
+    },
+    {
+      "platform": "youtube",
+      "enabled": false
+    },
+    {
+      "platform": "tiktok",
+      "enabled": false
+    },
+    {
+      "platform": "weibo",
+      "enabled": false
+    },
+    {
+      "platform": "douyin",
+      "enabled": false
+    }
+  ]
+}

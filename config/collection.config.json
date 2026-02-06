@@ -1,0 +1,175 @@
+{
+  "system": {
+    "version": "1.0.0",
+    "debug": false,
+    "logLevel": "info",
+    "dataStoragePath": "./data/collections",
+    "tempStoragePath": "./temp"
+  },
+  "antiCrawling": {
+    "enabled": true,
+    "requestDelay": {
+      "enabled": true,
+      "minDelay": 1000,
+      "maxDelay": 5000,
+      "randomize": true
+    },
+    "proxy": {
+      "enabled": false,
+      "servers": [],
+      "rotationStrategy": "round-robin"
+    },
+    "userAgent": {
+      "enabled": true,
+      "agents": [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      ],
+      "rotationFrequency": 10
+    },
+    "errorRetry": {
+      "maxRetries": 3,
+      "retryDelayBase": 1000,
+      "exponentialBackoff": true
+    }
+  },
+  "dataCleaning": {
+    "enabled": true,
+    "deduplication": {
+      "urlDeduplication": true,
+      "contentDeduplication": true,
+      "similarityThreshold": 0.8,
+      "crossPlatformDeduplication": true
+    },
+    "validation": {
+      "validateRequiredFields": true,
+      "requiredFields": ["id", "platform", "title", "content", "url", "publishedAt"],
+      "fieldRules": {
+        "title": {
+          "minLength": 5,
+          "maxLength": 200
+        },
+        "content": {
+          "minLength": 10
+        },
+        "url": {
+          "pattern": "^https?://"
+        }
+      }
+    },
+    "normalization": {
+      "normalizeDates": true,
+      "dateFormat": "YYYY-MM-DDTHH:mm:ssZ",
+      "normalizeEncoding": true,
+      "targetEncoding": "UTF-8"
+    },
+    "contentProcessing": {
+      "extractKeywords": true,
+      "maxKeywords": 10,
+      "performSentimentAnalysis": true,
+      "sentimentModel": "default"
+    }
+  },
+  "taskScheduling": {
+    "enabled": true,
+    "maxConcurrentTasks": 3,
+    "historyRetentionDays": 30,
+    "defaultTaskConfig": {
+      "maxRetries": 3,
+      "timeout": 300000,
+      "defaultPriority": "normal"
+    }
+  },
+  "platforms": [
+    {
+      "platform": "twitter",
+      "enabled": true,
+      "collectionFrequency": "hourly",
+      "priority": "high",
+      "platformSpecific": {
+        "enableApiCollection": true,
+        "enableWebCollection": true,
+        "collectionTargets": {
+          "collectTrendingTopics": true,
+          "collectPopularTweets": true,
+          "maxTweetsPerCollection": 100
+        }
+      }
+    },
+    {
+      "platform": "youtube",
+      "enabled": true,
+      "collectionFrequency": "every-6-hours",
+      "priority": "high",
+      "platformSpecific": {
+        "enableWebCollection": true,
+        "collectionTargets": {
+          "collectTrendingVideos": true,
+          "collectPopularChannels": true,
+          "maxVideosPerCollection": 50
+        }
+      }
+    },
+    {
+      "platform": "tiktok",
+      "enabled": true,
+      "collectionFrequency": "twice-daily",
+      "priority": "normal",
+      "platformSpecific": {
+        "enableWebCollection": true,
+        "collectionTargets": {
+          "collectTrendingVideos": true,
+          "collectHashtags": true,
+          "maxVideosPerCollection": 30
+        }
+      }
+    },
+    {
+      "platform": "weibo",
+      "enabled": true,
+      "collectionFrequency": "hourly",
+      "priority": "high",
+      "platformSpecific": {
+        "enableWebCollection": true,
+        "collectionTargets": {
+          "collectHotTopics": true,
+          "collectPopularWeibos": true,
+          "maxWeibosPerCollection": 100
+        }
+      }
+    },
+    {
+      "platform": "douyin",
+      "enabled": true,
+      "collectionFrequency": "twice-daily",
+      "priority": "normal",
+      "platformSpecific": {
+        "enableWebCollection": true,
+        "collectionTargets": {
+          "collectTrendingVideos": true,
+          "collectHotTopics": true,
+          "maxVideosPerCollection": 30
+        }
+      }
+    }
+  ],
+  "monitoring": {
+    "enabled": true,
+    "collectionInterval": 60,
+    "performanceThresholds": {
+      "maxCollectionTime": 300000,
+      "minSuccessRate": 80,
+      "maxMemoryUsage": 1024
+    },
+    "alerts": {
+      "enabled": true,
+      "channels": ["console", "log"],
+      "thresholds": {
+        "collectionFailureRate": 20,
+        "highMemoryUsage": 80,
+        "longCollectionTime": 180000
+      }
+    }
+  }
+}

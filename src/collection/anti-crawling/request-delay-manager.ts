@@ -37,6 +37,7 @@ export class RequestDelayManager extends AntiCrawlingSystem {
   private frequencyConfig: FrequencyControlConfig;
   private delayStrategies: Map<string, DelayStrategy>;
   private currentDelayStrategy: string;
+  private cleanupIntervalId: NodeJS.Timeout | null = null;
 
   constructor(
     config: Partial<AntiCrawlingConfig> = {},
@@ -307,7 +308,7 @@ export class RequestDelayManager extends AntiCrawlingSystem {
    * 启动历史记录清理定时器
    */
   private startHistoryCleanup(): void {
-    setInterval(() => {
+    this.cleanupIntervalId = setInterval(() => {
       this.cleanupOldHistory();
     }, 60000); // 每分钟清理一次
   }
@@ -436,5 +437,37 @@ export class RequestDelayManager extends AntiCrawlingSystem {
   resetRequestHistory(): void {
     this.requestHistory = [];
     this.logger.info('Request history reset');
+  }
+
+  /**
+   * 初始化（兼容接口）
+   */
+  async initialize(): Promise<void> {
+    this.logger.debug('RequestDelayManager initialized');
+  }
+
+  /**
+   * 应用延迟（兼容接口）
+   */
+  async applyDelay(): Promise<void> {
+    await this.waitForDelay();
+  }
+
+  /**
+   * 清理资源
+   */
+  async cleanup(): Promise<void> {
+    this.logger.info('清理RequestDelayManager资源...');
+
+    // 清除定时器
+    if (this.cleanupIntervalId) {
+      clearInterval(this.cleanupIntervalId);
+      this.cleanupIntervalId = null;
+    }
+
+    // 清除请求历史
+    this.requestHistory = [];
+
+    this.logger.info('RequestDelayManager资源清理完成');
   }
 }
